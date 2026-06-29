@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Pre-push: sync GAMMA-common to origin/main, auto-commit bump, re-push once.
+# Enable per clone: git config core.hooksPath githooks
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+if [ ! -f .gitmodules ] || ! grep -qE 'path = GAMMA-common' .gitmodules; then
+	exit 0
+fi
+
+git submodule update --init GAMMA-common
+
+BRANCH=$(git config -f .gitmodules submodule.GAMMA-common.branch || echo main)
+
+git -C GAMMA-common fetch origin "$BRANCH" --quiet
+
+OLD=$(git rev-parse GAMMA-common)
+NEW=$(git -C GAMMA-common rev-parse "origin/$BRANCH")
+
+if [ "$OLD" = "$NEW" ]; then
+	exit 0
+fi
+
+echo "GAMMA-common submodule: ${OLD:0:7} -> ${NEW:0:7}"
+
+git submodule update --remote GAMMA-common
+git add GAMMA-common
+
+if [ -n "$(git status --porcelain -uno | grep -v 'GAMMA-common')" ]; then
+	echo "GAMMA-common updated. Commit or stash other changes, then commit the submodule bump and push."
+	exit 1
+fi
+
+if git diff --cached --quiet; then
+	exit 0
+fi
+
+VERSION=$(grep -E '^version=' GAMMA-common/meta.ini | head -1 | cut -d= -f2 | tr -d '[:space:]' || echo "unknown")
+git commit -m "Bump GAMMA-common submodule to v${VERSION}"
+
+echo ""
+echo "GAMMA-common bumped to v${VERSION}. Run git push again to publish."
+
+exit 1
