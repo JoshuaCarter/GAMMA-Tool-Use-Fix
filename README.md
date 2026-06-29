@@ -33,7 +33,7 @@ Vanilla prone is fake. It's really just a low crouch: your view drops, but your 
 
 1. Download the latest release
 2. Install via MO2 like normal
-3. **Requires [000-Dorns Common](https://github.com/JoshuaCarter/dorn-common)** — enable it **above** this mod in load order
+3. **Requires [Dorns Common](https://github.com/JoshuaCarter/GAMMA-Common/releases)** — enable it **above** this mod in load order
 
 ## Warnings!
 
