@@ -210,14 +210,3 @@ function on_game_start()
 
 	log(LOG_TYPE.LIFECYCLE, "loaded")
 end
-
-function on_game_end()
-	if db.actor then
-		set_prone_bones_visible(db.actor, true)
-	end
-	UnregisterScriptCallback("actor_on_update", cb_actor_on_update)
-	UnregisterScriptCallback("actor_on_before_hit", cb_actor_on_before_hit)
-	UnregisterScriptCallback("on_option_change", cb_sync_config)
-
-	log(LOG_TYPE.LIFECYCLE, "unloaded")
-end
